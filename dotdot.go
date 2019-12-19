@@ -6,6 +6,13 @@ import (
 	"math/rand"
 )
 
+const (
+	defaultDistance = 100
+	defaultNumber   = 100
+	defaultSpeed    = 150
+	defaultSize     = 6
+)
+
 type DotDot struct {
 	Distance float64
 	Number   int
@@ -14,27 +21,28 @@ type DotDot struct {
 	Speed    float64
 	Size     float64
 
-	Width  float64
-	Height float64
+	width  float64
+	height float64
 
 	dots []*Dot
 }
 
 func New(width, height float64) (d *DotDot) {
 	d = &DotDot{
-		Distance: 100,
-		Number:   100,
-		Speed:    150,
-		Size:     6,
-		Width:    width,
-		Height:   height,
+		Distance: defaultDistance,
+		Number:   defaultNumber,
+		Speed:    defaultSpeed,
+		Size:     defaultSize,
+		width:    width,
+		height:   height,
 	}
 	return
 }
 
 func (d *DotDot) InitDots() {
+	d.normalizeArgs()
 	d.dots = make([]*Dot, d.Number)
-	randomSpeed := d.MinSpeed < d.MaxSpeed
+	randomSpeed := d.MinSpeed < d.MaxSpeed && d.MinSpeed > 0
 	for i := 0; i < d.Number; i++ {
 		dot := &Dot{
 			color: color.RGBA{
@@ -48,8 +56,8 @@ func (d *DotDot) InitDots() {
 				rand.NormFloat64(),
 			},
 			pos: [2]float64{
-				rand.Float64() * d.Width,
-				rand.Float64() * d.Height,
+				rand.Float64() * d.width,
+				rand.Float64() * d.height,
 			},
 			size: d.Size,
 		}
@@ -77,16 +85,16 @@ func (d *DotDot) Update(cursorPos [2]float64) {
 			dot.pos[0] = 0
 			dot.dir[0] *= -1
 		}
-		if dot.pos[0] > d.Width {
-			dot.pos[0] = d.Width
+		if dot.pos[0] > d.width {
+			dot.pos[0] = d.width
 			dot.dir[0] *= -1
 		}
 		if dot.pos[1] < 0 {
 			dot.pos[1] = 0
 			dot.dir[1] *= -1
 		}
-		if dot.pos[1] > d.Height {
-			dot.pos[1] = d.Height
+		if dot.pos[1] > d.height {
+			dot.pos[1] = d.height
 			dot.dir[1] *= -1
 		}
 
@@ -115,5 +123,17 @@ func (d *DotDot) Update(cursorPos [2]float64) {
 		// move
 		dot.pos[0] += dot.dir[0] * dot.speed * 0.01
 		dot.pos[1] += dot.dir[1] * dot.speed * 0.01
+	}
+}
+
+func (d *DotDot) normalizeArgs() {
+	if d.Number < 1 {
+		d.Number = defaultNumber
+	}
+	if d.Size < 1 {
+		d.Size = defaultSize
+	}
+	if d.Speed < 1 {
+		d.Speed = defaultSpeed
 	}
 }
