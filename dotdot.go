@@ -62,10 +62,6 @@ func (d *DotDot) InitDots() {
 	}
 }
 
-func (d *DotDot) Set() {
-
-}
-
 func (d *DotDot) Start() {
 	d.InitDots()
 }
